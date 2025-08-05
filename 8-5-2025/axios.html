@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Axios with HTML</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <h1>ตัวอย่างการใช้ Axios ใน HTML</h1>
+
+  <!-- ปุ่มแรก: ดึงข้อมูลผู้ใช้ -->
+  <button onclick="fetchData()">ดึงข้อมูลผู้ใช้</button>
+
+  <!-- ปุ่มที่สอง: ดึงข้อมูลรูปภาพจาก Unsplash API -->
+  <button onclick="fetchImages()">ดึงข้อมูลรูปภาพ</button>
+
+  <!-- แสดงผลลัพธ์ -->
+  <ul id="user-list" style="margin-top: 20px;">
+    <!-- รายการผู้ใช้จะแสดงที่นี่ -->
+  </ul>
+
+  <div id="image-container" style="margin-top: 20px;">
+    <!-- รูปภาพจะแสดงที่นี่ -->
+  </div>
+
+  <script>
+    async function fetchData() {
+      const userList = document.getElementById('user-list');
+      userList.innerHTML = '<li>กำลังโหลดข้อมูล...</li>';
+
+      try {
+        // ใช้ axios.get() เพื่อส่งคำขอ GET
+        const response = await axios.get('https://jsonplaceholder.typicode.com/users');
+        const users = response.data;
+
+        // สุ่มเลือก 5 คนจากข้อมูลผู้ใช้ทั้งหมด
+        const selectedUsers = getRandomUsers(users, 5);
+
+        // ล้างรายการเก่าและแสดงชื่อผู้ใช้ 5 คน
+        userList.innerHTML = '';
+        selectedUsers.forEach(user => {
+          const listItem = document.createElement('li');
+          listItem.textContent = `ชื่อผู้ใช้: ${user.name}`;
+          userList.appendChild(listItem);
+        });
+      } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้:', error.message);
+        userList.innerHTML = '<li>เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้</li>';
+      }
+    }
+
+    // ฟังก์ชันสุ่มผู้ใช้
+    function getRandomUsers(users, count) {
+      // สุ่มผู้ใช้จากทั้งหมดแล้วเลือกตามจำนวนที่ต้องการ
+      const shuffled = [...users].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    }
+
+    async function fetchImages() {
+      const imageContainer = document.getElementById('image-container');
+      
+      // แสดงข้อความกำลังโหลดก่อนเริ่มดึงรูปภาพ
+      imageContainer.innerHTML = '<p>กำลังโหลดรูปภาพ...</p>';
+
+      try {
+        // ใช้ URL รูปภาพจากแหล่งอื่น (ใช้ placeholder รูปภาพ)
+        const imageUrls = [
+          'https://via.placeholder.com/150/FF0000/FFFFFF?text=Image+1',
+          'https://via.placeholder.com/150/00FF00/FFFFFF?text=Image+2',
+          'https://via.placeholder.com/150/0000FF/FFFFFF?text=Image+3',
+          'https://via.placeholder.com/150/FFFF00/FFFFFF?text=Image+4',
+          'https://via.placeholder.com/150/FF00FF/FFFFFF?text=Image+5',
+          'https://via.placeholder.com/150/00FFFF/FFFFFF?text=Image+6',
+          'https://via.placeholder.com/150/000000/FFFFFF?text=Image+7'
+        ];
+
+        // ล้างข้อความ "กำลังโหลดรูปภาพ..."
+        imageContainer.innerHTML = '';
+
+        // แสดง 7 รูปภาพที่ดึงมาจาก URL
+        imageUrls.forEach(url => {
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = 'Placeholder Image';
+          img.style.margin = '10px';
+          img.style.width = '150px';
+          img.style.height = 'auto';
+
+          // เพิ่มรูปภาพใน container
+          imageContainer.appendChild(img);
+        });
+      } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการดึงรูปภาพ:', error.message);
+        imageContainer.innerHTML = '<p>เกิดข้อผิดพลาดในการดึงรูปภาพ</p>';
+        
+        // แสดงรูปภาพพลาด
+        const fallbackImg = document.createElement('img');
+        fallbackImg.src = 'https://via.placeholder.com/150';  // รูปภาพพลาด
+        fallbackImg.alt = 'Error loading image';
+        fallbackImg.style.margin = '10px';
+        fallbackImg.style.width = '150px';
+        fallbackImg.style.height = 'auto';
+
+        imageContainer.appendChild(fallbackImg);
+      }
+    }
+  </script>
+</body>
+</html>
